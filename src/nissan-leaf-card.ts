@@ -58,7 +58,7 @@ export class NissanLeafCard extends LitElement {
     return document.createElement("nissan-leaf-card-editor");
   }
 
-  public static getStubConfig(): object {
+  public static getStubConfig() {
     return {};
   }
 

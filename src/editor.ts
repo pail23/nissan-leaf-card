@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
+
 import { LitElement, html, TemplateResult, css, CSSResultGroup } from "lit";
 import {
   HomeAssistant,
