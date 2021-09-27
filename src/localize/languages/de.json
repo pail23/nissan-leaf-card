@@ -1,0 +1,11 @@
+{
+  "common": {
+    "version": "Versjon",
+    "invalid_configuration": "Ungültige Konfiguration",
+    "show_warning": "Warnung Anzeigen",
+    "charge": "Ladezustand",
+    "chargingStatus": "Am Laden?",
+    "range": "Reichweite",
+    "rangeAC": "Reichweite mit Klima"
+  }
+}

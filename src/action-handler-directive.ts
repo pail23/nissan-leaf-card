@@ -1,10 +1,18 @@
-import { noChange } from 'lit';
-import { AttributePart, directive, Directive, DirectiveParameters } from 'lit/directive';
+import { noChange } from "lit";
+import {
+  AttributePart,
+  directive,
+  Directive,
+  DirectiveParameters,
+} from "lit/directive";
 
-import { ActionHandlerDetail, ActionHandlerOptions } from 'custom-card-helpers/dist/types';
-import { fireEvent } from 'custom-card-helpers';
+import {
+  ActionHandlerDetail,
+  ActionHandlerOptions,
+} from "custom-card-helpers/dist/types";
+import { fireEvent } from "custom-card-helpers";
 
-const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
 interface ActionHandler extends HTMLElement {
   holdTime: number;
@@ -34,23 +42,31 @@ class ActionHandler extends HTMLElement implements ActionHandler {
 
   constructor() {
     super();
-    this.ripple = document.createElement('mwc-ripple');
+    this.ripple = document.createElement("mwc-ripple");
   }
 
   public connectedCallback(): void {
     Object.assign(this.style, {
-      position: 'absolute',
-      width: isTouch ? '100px' : '50px',
-      height: isTouch ? '100px' : '50px',
-      transform: 'translate(-50%, -50%)',
-      pointerEvents: 'none',
-      zIndex: '999',
+      position: "absolute",
+      width: isTouch ? "100px" : "50px",
+      height: isTouch ? "100px" : "50px",
+      transform: "translate(-50%, -50%)",
+      pointerEvents: "none",
+      zIndex: "999",
     });
 
     this.appendChild(this.ripple);
     this.ripple.primary = true;
 
-    ['touchcancel', 'mouseout', 'mouseup', 'touchmove', 'mousewheel', 'wheel', 'scroll'].forEach(ev => {
+    [
+      "touchcancel",
+      "mouseout",
+      "mouseup",
+      "touchmove",
+      "mousewheel",
+      "wheel",
+      "scroll",
+    ].forEach((ev) => {
       document.addEventListener(
         ev,
         () => {
@@ -58,7 +74,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
           this.stopAnimation();
           this.timer = undefined;
         },
-        { passive: true },
+        { passive: true }
       );
     });
   }
@@ -69,7 +85,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     }
     element.actionHandler = true;
 
-    element.addEventListener('contextmenu', (ev: Event) => {
+    element.addEventListener("contextmenu", (ev: Event) => {
       const e = ev || window.event;
       if (e.preventDefault) {
         e.preventDefault();
@@ -103,27 +119,33 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     const end = (ev: Event): void => {
       // Prevent mouse event if touch event
       ev.preventDefault();
-      if (['touchend', 'touchcancel'].includes(ev.type) && this.timer === undefined) {
+      if (
+        ["touchend", "touchcancel"].includes(ev.type) &&
+        this.timer === undefined
+      ) {
         return;
       }
       clearTimeout(this.timer);
       this.stopAnimation();
       this.timer = undefined;
       if (this.held) {
-        fireEvent(element, 'action', { action: 'hold' });
+        fireEvent(element, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
-        if ((ev.type === 'click' && (ev as MouseEvent).detail < 2) || !this.dblClickTimeout) {
+        if (
+          (ev.type === "click" && (ev as MouseEvent).detail < 2) ||
+          !this.dblClickTimeout
+        ) {
           this.dblClickTimeout = window.setTimeout(() => {
             this.dblClickTimeout = undefined;
-            fireEvent(element, 'action', { action: 'tap' });
+            fireEvent(element, "action", { action: "tap" });
           }, 250);
         } else {
           clearTimeout(this.dblClickTimeout);
           this.dblClickTimeout = undefined;
-          fireEvent(element, 'action', { action: 'double_tap' });
+          fireEvent(element, "action", { action: "double_tap" });
         }
       } else {
-        fireEvent(element, 'action', { action: 'tap' });
+        fireEvent(element, "action", { action: "tap" });
       }
     };
 
@@ -134,14 +156,14 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       end(ev);
     };
 
-    element.addEventListener('touchstart', start, { passive: true });
-    element.addEventListener('touchend', end);
-    element.addEventListener('touchcancel', end);
+    element.addEventListener("touchstart", start, { passive: true });
+    element.addEventListener("touchend", end);
+    element.addEventListener("touchcancel", end);
 
-    element.addEventListener('mousedown', start, { passive: true });
-    element.addEventListener('click', end);
+    element.addEventListener("mousedown", start, { passive: true });
+    element.addEventListener("click", end);
 
-    element.addEventListener('keyup', handleEnter);
+    element.addEventListener("keyup", handleEnter);
   }
 
   private startAnimation(x: number, y: number): void {
@@ -158,26 +180,29 @@ class ActionHandler extends HTMLElement implements ActionHandler {
   private stopAnimation(): void {
     this.ripple.active = false;
     this.ripple.disabled = true;
-    this.style.display = 'none';
+    this.style.display = "none";
   }
 }
 
-// TODO You need to replace all instances of "action-handler-boilerplate" with "action-handler-<your card name>"
-customElements.define('action-handler-boilerplate', ActionHandler);
+// TODO You need to replace all instances of "action-handler-nissan-leaf" with "action-handler-<your card name>"
+customElements.define("action-handler-nissan-leaf", ActionHandler);
 
 const getActionHandler = (): ActionHandler => {
   const body = document.body;
-  if (body.querySelector('action-handler-boilerplate')) {
-    return body.querySelector('action-handler-boilerplate') as ActionHandler;
+  if (body.querySelector("action-handler-nissan-leaf")) {
+    return body.querySelector("action-handler-nissan-leaf") as ActionHandler;
   }
 
-  const actionhandler = document.createElement('action-handler-boilerplate');
+  const actionhandler = document.createElement("action-handler-nissan-leaf");
   body.appendChild(actionhandler);
 
   return actionhandler as ActionHandler;
 };
 
-export const actionHandlerBind = (element: ActionHandlerElement, options?: ActionHandlerOptions): void => {
+export const actionHandlerBind = (
+  element: ActionHandlerElement,
+  options?: ActionHandlerOptions
+): void => {
   const actionhandler: ActionHandler = getActionHandler();
   if (!actionhandler) {
     return;
@@ -194,5 +219,5 @@ export const actionHandler = directive(
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     render(_options?: ActionHandlerOptions) {}
-  },
+  }
 );
