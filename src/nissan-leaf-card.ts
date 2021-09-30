@@ -71,7 +71,7 @@ export class NissanLeafCard extends LitElement {
   // https://lit.dev/docs/components/properties/#accessors-custom
   public setConfig(config: NissanLeafCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
-    if (!config) {
+    if (config == null) {
       throw new Error(localize("common.invalid_configuration"));
     }
 
@@ -91,12 +91,12 @@ export class NissanLeafCard extends LitElement {
       : undefined;
   }
 
-  get vin():string {
+  get vin(): string {
     const entity = this.chargeEntity;
-    if (entity !== undefined){
-      return entity?.attributes['vin'];
+    if (entity != undefined) {
+      return entity?.attributes["vin"];
     } else {
-      return '';
+      return "";
     }
   }
 
@@ -429,7 +429,7 @@ export class NissanLeafCard extends LitElement {
         // spacing: 0px 0 40
         // text-align: right;
         padding: 5px;
-        font-weight: bold;
+        font-weight: normal;
         color: var(--custom-text-color);
 
         // border: 1px;
