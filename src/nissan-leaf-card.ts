@@ -91,6 +91,15 @@ export class NissanLeafCard extends LitElement {
       : undefined;
   }
 
+  get vin():string {
+    const entity = this.chargeEntity;
+    if (entity !== undefined){
+      return entity?.attributes['vin'];
+    } else {
+      return '';
+    }
+  }
+
   private get entityBasename(): string {
     return this.config.chargeEntity === undefined
       ? ""
@@ -163,6 +172,7 @@ export class NissanLeafCard extends LitElement {
 
   private callService(service, isRequest = true, options = {}) {
     this.hass.callService(LEAF_SERVICE_DOMAIN, service, {
+      vin: this.vin,
       ...options,
     });
 

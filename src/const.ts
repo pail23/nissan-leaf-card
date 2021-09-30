@@ -1,4 +1,4 @@
-export const CARD_VERSION = "1.4.0";
+export const CARD_VERSION = "0.0.1";
 
 import * as imageGeneric from "./img/nissan-leaf.png";
 export const LEAF_IMAGE = imageGeneric.default;
