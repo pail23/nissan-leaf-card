@@ -236,7 +236,7 @@ export class NissanLeafCard extends LitElement {
 
   private renderBattery(): TemplateResult | void {
     const { charge, chargingStatus } = this.getEntities();
-    if (chargingStatus) {
+    if (chargingStatus && chargingStatus.state == 'on') {
       const batteryLevel = parseFloat(this.getEntityState(charge)) / 100;
       const startWidth = Math.round(batteryLevel * 190);
       const speed = Math.round((1 - batteryLevel) * 8);
@@ -244,7 +244,6 @@ export class NissanLeafCard extends LitElement {
         <div class="battery">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.13 142.85">
             <defs></defs>
-            <title>battery</title>
 
             <path
               class="battery-frame"

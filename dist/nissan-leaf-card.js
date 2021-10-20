@@ -128,11 +128,10 @@ const F=t=>e=>"function"==typeof e?((t,e)=>(window.customElements.define(t,e),e)
         ></ha-icon-button>
         <span class="tooltiptext">${s}</span>
       </div>
-    `}renderBattery(){const{charge:t,chargingStatus:e}=this.getEntities();if(e){const e=parseFloat(this.getEntityState(t))/100,n=Math.round(190*e),i=Math.round(8*(1-e));return N`
+    `}renderBattery(){const{charge:t,chargingStatus:e}=this.getEntities();if(e&&"on"==e.state){const e=parseFloat(this.getEntityState(t))/100,n=Math.round(190*e),i=Math.round(8*(1-e));return N`
         <div class="battery">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.13 142.85">
             <defs></defs>
-            <title>battery</title>
 
             <path
               class="battery-frame"
