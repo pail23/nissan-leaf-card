@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  css,
-  PropertyValues,
-  CSSResultGroup,
-} from "lit";
-import { HassEntity } from "home-assistant-js-websocket";
-import { customElement, property, state } from "lit/decorators";
+import { LitElement, html, TemplateResult, css, PropertyValues, CSSResultGroup } from 'lit';
+import { HassEntity } from 'home-assistant-js-websocket';
+import { customElement, property, state } from 'lit/decorators';
 import {
   HomeAssistant,
   hasConfigOrEntityChanged,
@@ -18,44 +11,35 @@ import {
   fireEvent,
   LovelaceCardEditor,
   getLovelace,
-} from "custom-card-helpers"; // This is a community maintained npm module with common helper functions/types. https://github.com/custom-cards/custom-card-helpers
+} from 'custom-card-helpers'; // This is a community maintained npm module with common helper functions/types. https://github.com/custom-cards/custom-card-helpers
 
-import "./editor";
+import './editor';
 
-import type { NissanLeafCardConfig } from "./types";
-import { actionHandler } from "./action-handler-directive";
-import {
-  CARD_VERSION,
-  LEAF_IMAGE,
-  LEAF_SERVICE_DOMAIN,
-  LEAF_ENTITY_BASE,
-  ENTITIES,
-} from "./const";
-import { localize } from "./localize/localize";
+import type { NissanLeafCardConfig } from './types';
+import { actionHandler } from './action-handler-directive';
+import { CARD_VERSION, LEAF_IMAGE, LEAF_SERVICE_DOMAIN, LEAF_ENTITY_BASE, ENTITIES } from './const';
+import { localize } from './localize/localize';
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  NISSAN-LEAF-CARD \n%c  ${localize(
-    "common.version"
-  )} ${CARD_VERSION}    `,
-  "color: orange; font-weight: bold; background: black",
-  "color: white; font-weight: bold; background: dimgray"
+  `%c  NISSAN-LEAF-CARD \n%c  ${localize('common.version')} ${CARD_VERSION}    `,
+  'color: orange; font-weight: bold; background: black',
+  'color: white; font-weight: bold; background: dimgray',
 );
 
 // This puts your card into the UI card picker dialog
 (window as any).customCards = (window as any).customCards || [];
 (window as any).customCards.push({
-  type: "nissan-leaf-card",
-  name: "Nissan Leaf Card",
-  description:
-    "A nissan leaf card for visualizing the status of your Nissan Leaf",
+  type: 'nissan-leaf-card',
+  name: 'Nissan Leaf Card',
+  description: 'A nissan leaf card for visualizing the status of your Nissan Leaf',
 });
 
 // TODO Name your custom element
-@customElement("nissan-leaf-card")
+@customElement('nissan-leaf-card')
 export class NissanLeafCard extends LitElement {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    return document.createElement("nissan-leaf-card-editor");
+    return document.createElement('nissan-leaf-card-editor');
   }
 
   public static getStubConfig() {
@@ -72,7 +56,7 @@ export class NissanLeafCard extends LitElement {
   public setConfig(config: NissanLeafCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
     if (config == null) {
-      throw new Error(localize("common.invalid_configuration"));
+      throw new Error(localize('common.invalid_configuration'));
     }
 
     if (config.test_gui) {
@@ -80,30 +64,28 @@ export class NissanLeafCard extends LitElement {
     }
 
     this.config = {
-      name: "Nissan Leaf",
+      name: 'Nissan Leaf',
       ...config,
     };
   }
 
   get chargeEntity(): HassEntity | undefined {
-    return this.config.chargeEntity != undefined
-      ? this.hass.states[this.config.chargeEntity]
-      : undefined;
+    return this.config.chargeEntity != undefined ? this.hass.states[this.config.chargeEntity] : undefined;
   }
 
   get vin(): string {
     const entity = this.chargeEntity;
     if (entity != undefined) {
-      return entity?.attributes["vin"];
+      return entity?.attributes['vin'];
     } else {
-      return "";
+      return '';
     }
   }
 
   private get entityBasename(): string {
     return this.config.chargeEntity === undefined
-      ? ""
-      : this.config.chargeEntity.split(".")[1].replace(LEAF_ENTITY_BASE, "");
+      ? ''
+      : this.config.chargeEntity.split('.')[1].replace(LEAF_ENTITY_BASE, '');
   }
 
   private getEntityState(entity) {
@@ -124,13 +106,7 @@ export class NissanLeafCard extends LitElement {
 
   private getEntityId(entityBase: string): string | undefined {
     try {
-      return (
-        entityBase.split(".")[0] +
-        "." +
-        this.entityBasename +
-        "_" +
-        entityBase.split(".")[1]
-      );
+      return entityBase.split('.')[0] + '.' + this.entityBasename + '_' + entityBase.split('.')[1];
     } catch (err) {
       return undefined;
     }
@@ -186,14 +162,14 @@ export class NissanLeafCard extends LitElement {
     if (entity && entity.entity_id) {
       fireEvent(
         this,
-        "hass-more-info",
+        'hass-more-info',
         {
           entityId: entity.entity_id,
         },
         {
           bubbles: true,
           composed: true,
-        }
+        },
       );
     }
   }
@@ -202,26 +178,15 @@ export class NissanLeafCard extends LitElement {
     if (entity === null || entity === undefined) {
       return html``;
     }
-    const value = round
-      ? Math.round(this.getEntityState(entity))
-      : this.getEntityState(entity);
-    const useUnit = this.getEntityAttribute(entity, "unit_of_measurement");
+    const value = round ? Math.round(this.getEntityState(entity)) : this.getEntityState(entity);
+    const useUnit = this.getEntityAttribute(entity, 'unit_of_measurement');
     // const icon = this.renderIcon(entity);
     return html` ${value} ${useUnit} `;
   }
 
-  private renderInfoItem(
-    entity,
-    tooltip: string,
-    icon: string,
-    round = false
-  ): TemplateResult | void {
+  private renderInfoItem(entity, tooltip: string, icon: string, round = false): TemplateResult | void {
     return html`
-      <div
-        class="infoitems-item"
-        @click="${() => this.handleMore(entity)}"
-        ?more-info="true"
-      >
+      <div class="infoitems-item" @click="${() => this.handleMore(entity)}" ?more-info="true">
         <div class="tooltip">
           <ha-icon icon="${icon}"></ha-icon>
           ${this.renderInfoItemText(entity, round)}
@@ -233,42 +198,25 @@ export class NissanLeafCard extends LitElement {
 
   private renderInfoItemsLeft(): TemplateResult | void {
     const { charge, plugStatus } = this.getEntities();
-    const pluggedIn = plugStatus ? plugStatus.state == "on" : false;
-    const plugIcon = pluggedIn ? "mdi:power-plug" : "mdi:power-plug-off";
+    const pluggedIn = plugStatus ? plugStatus.state == 'on' : false;
+    const plugIcon = pluggedIn ? 'mdi:power-plug' : 'mdi:power-plug-off';
     return html`
-      ${this.renderInfoItem(charge, localize("common.charge"), "mdi:battery")}
-      ${this.renderInfoItem(undefined, localize("common.charge"), plugIcon)}
+      ${this.renderInfoItem(charge, localize('common.charge'), 'mdi:battery')}
+      ${this.renderInfoItem(undefined, localize('common.charge'), plugIcon)}
     `;
   }
 
   private renderInfoItemsRight(): TemplateResult | void {
     const { range, rangeAC, chargingStatus } = this.getEntities();
     return html`
-      ${this.renderInfoItem(
-        range,
-        localize("common.range"),
-        "mdi:map-marker-distance"
-      )}
-      ${this.renderInfoItem(
-        rangeAC,
-        localize("common.rangeAC"),
-        "mdi:map-marker-distance"
-      )}
-      ${this.renderInfoItem(
-        chargingStatus,
-        localize("common.chargingStatus"),
-        "mdi:ev-station"
-      )}
+      ${this.renderInfoItem(range, localize('common.range'), 'mdi:map-marker-distance')}
+      ${this.renderInfoItem(rangeAC, localize('common.rangeAC'), 'mdi:map-marker-distance')}
+      ${this.renderInfoItem(chargingStatus, localize('common.chargingStatus'), 'mdi:ev-station')}
     `;
   }
 
-  private renderToolbarButton(
-    service,
-    icon,
-    text,
-    isRequest = true
-  ): TemplateResult | void {
-    let useText = "";
+  private renderToolbarButton(service, icon, text, isRequest = true): TemplateResult | void {
+    let useText = '';
     try {
       useText = localize(text);
     } catch (e) {
@@ -284,6 +232,34 @@ export class NissanLeafCard extends LitElement {
         <span class="tooltiptext">${useText}</span>
       </div>
     `;
+  }
+
+  private renderBattery(): TemplateResult | void {
+    const { charge, chargingStatus } = this.getEntities();
+    if (chargingStatus) {
+      const batteryLevel = parseFloat(this.getEntityState(charge)) / 100;
+      const startWidth = Math.round(batteryLevel * 190);
+      const speed = Math.round((1 - batteryLevel) * 8);
+      return html`
+        <div class="battery">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.13 142.85">
+            <defs></defs>
+            <title>battery</title>
+
+            <path
+              class="battery-frame"
+              d="M257.13,92.85a14.24,14.24,0,0,1-14.29,14.29V125A17.91,17.91,0,0,1,225,142.85H17.86A17.91,17.91,0,0,1,0,125V17.86A17.91,17.91,0,0,1,17.86,0H225a17.91,17.91,0,0,1,17.86,17.86V35.71A14.24,14.24,0,0,1,257.13,50Zm-14.29,0V50H228.56V17.86A3.53,3.53,0,0,0,225,14.29H17.86a3.52,3.52,0,0,0-3.57,3.57V125a3.52,3.52,0,0,0,3.57,3.57H225a3.53,3.53,0,0,0,3.57-3.57V92.85Z"
+            />
+
+            <rect class="battery-level" x="26" y="26" width="190" height="90">
+              <animate attributeName="width" values="${startWidth}; 190" dur="${speed}s" repeatCount="indefinite" />
+            </rect>
+          </svg>
+        </div>
+      `;
+    } else {
+      return html``;
+    }
   }
 
   // https://lit.dev/docs/components/rendering/
@@ -302,9 +278,7 @@ export class NissanLeafCard extends LitElement {
       <ha-card
         .header=${this.config.name}
         tabindex="0"
-        .label=${`Nissan Leaf: ${
-          this.config.chargeEntity || "No Entity Defined"
-        }`}
+        .label=${`Nissan Leaf: ${this.config.chargeEntity || 'No Entity Defined'}`}
       >
         <div class="header">
           <div class="infoitems-left">${this.renderInfoItemsLeft()}</div>
@@ -312,32 +286,10 @@ export class NissanLeafCard extends LitElement {
           <div class="infoitems">${this.renderInfoItemsRight()}</div>
         </div>
         <img src="${LEAF_IMAGE}" />
-        <div class="toolbar">
-          ${this.renderToolbarButton("update", "mdi:reload", "Update")}
-        </div>
+        <div class="toolbar">${this.renderToolbarButton('update', 'mdi:reload', 'Update')}</div>
+        <div class="battery-container">${this.renderBattery()}</div>
       </ha-card>
     `;
-  }
-  /*
-  private _handleAction(ev: ActionHandlerEvent): void {
-    if (this.hass && this.config && ev.detail.action) {
-      handleAction(this, this.hass, this.config, ev.detail.action);
-    }
-  }
-*/
-  private _showWarning(warning: string): TemplateResult {
-    return html` <hui-warning>${warning}</hui-warning> `;
-  }
-
-  private _showError(error: string): TemplateResult {
-    const errorCard = document.createElement("hui-error-card");
-    errorCard.setConfig({
-      type: "error",
-      error,
-      origConfig: this.config,
-    });
-
-    return html` ${errorCard} `;
   }
 
   // https://lit.dev/docs/components/styles/
@@ -382,6 +334,31 @@ export class NissanLeafCard extends LitElement {
       .toolbar ha-icon-button:last-child {
         margin-right: 5px;
       }
+
+      .battery-container {
+        top: 200px;
+        right: 0px;
+        width: 100%;
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .battery {
+        margin: auto;
+        width: 80px;
+      }
+
+      .battery-frame {
+        fill: #20729b;
+      }
+
+      .battery-level {
+        top: 40;
+        fill: #20729b;
+      }
+
       .header {
         height: 0px;
         display: flex;
