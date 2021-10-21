@@ -335,7 +335,7 @@ export class NissanLeafCard extends LitElement {
       }
 
       .battery-container {
-        top: 200px;
+        top: 197px;
         right: 0px;
         width: 100%;
         position: absolute;
@@ -346,6 +346,8 @@ export class NissanLeafCard extends LitElement {
 
       .battery {
         margin: auto;
+        position: relative;
+        left: -25px;
         width: 80px;
       }
 

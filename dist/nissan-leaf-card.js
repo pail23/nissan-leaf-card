@@ -200,7 +200,7 @@ const F=t=>e=>"function"==typeof e?((t,e)=>(window.customElements.define(t,e),e)
       }
 
       .battery-container {
-        top: 200px;
+        top: 197px;
         right: 0px;
         width: 100%;
         position: absolute;
@@ -211,6 +211,8 @@ const F=t=>e=>"function"==typeof e?((t,e)=>(window.customElements.define(t,e),e)
 
       .battery {
         margin: auto;
+        position: relative;
+        left: -25px;
         width: 80px;
       }
 
