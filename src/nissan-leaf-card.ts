@@ -229,7 +229,6 @@ export class NissanLeafCard extends LitElement {
           title="${useText}"
           @click="${() => this.callService(service, isRequest)}"
         ></ha-icon-button>
-        <span class="tooltiptext">${useText}</span>
       </div>
     `;
   }
@@ -247,10 +246,10 @@ export class NissanLeafCard extends LitElement {
 
             <path
               class="battery-frame"
-              d="M257.13,92.85a14.24,14.24,0,0,1-14.29,14.29V125A17.91,17.91,0,0,1,225,142.85H17.86A17.91,17.91,0,0,1,0,125V17.86A17.91,17.91,0,0,1,17.86,0H225a17.91,17.91,0,0,1,17.86,17.86V35.71A14.24,14.24,0,0,1,257.13,50Zm-14.29,0V50H228.56V17.86A3.53,3.53,0,0,0,225,14.29H17.86a3.52,3.52,0,0,0-3.57,3.57V125a3.52,3.52,0,0,0,3.57,3.57H225a3.53,3.53,0,0,0,3.57-3.57V92.85Z"
+              d="M 257.13,74.107786 A 14.24,11.365588 0 0 1 242.84,85.513282 V 99.768156 A 17.91,14.294781 0 0 1 225,114.01505 H 17.86 A 17.91,14.294781 0 0 1 0,99.768156 V 14.254874 A 17.91,14.294781 0 0 1 17.86,0 H 225 a 17.91,14.294781 0 0 1 17.86,14.254874 v 14.246893 a 14.24,11.365588 0 0 1 14.27,11.405495 z m -14.29,0 V 39.907262 H 228.56 V 14.254874 A 3.53,2.8174527 0 0 0 225,11.405496 H 17.86 a 3.52,2.8094713 0 0 0 -3.57,2.849378 v 85.513282 a 3.52,2.8094713 0 0 0 3.57,2.849374 H 225 a 3.53,2.8174527 0 0 0 3.57,-2.849374 v -25.66037 z"
             />
 
-            <rect class="battery-level" x="26" y="26" width="190" height="90">
+            <rect class="battery-level" x="26" y="26" width="190" height="63">
               <animate attributeName="width" values="${startWidth}; 190" dur="${speed}s" repeatCount="indefinite" />
             </rect>
           </svg>
@@ -279,14 +278,14 @@ export class NissanLeafCard extends LitElement {
         tabindex="0"
         .label=${`Nissan Leaf: ${this.config.chargeEntity || 'No Entity Defined'}`}
       >
+        <img src="${LEAF_IMAGE}" />
+        ${this.renderBattery()}
         <div class="header">
           <div class="infoitems-left">${this.renderInfoItemsLeft()}</div>
 
           <div class="infoitems">${this.renderInfoItemsRight()}</div>
         </div>
-        <img src="${LEAF_IMAGE}" />
         <div class="toolbar">${this.renderToolbarButton('update', 'mdi:reload', 'Update')}</div>
-        <div class="battery-container">${this.renderBattery()}</div>
       </ha-card>
     `;
   }
@@ -334,23 +333,12 @@ export class NissanLeafCard extends LitElement {
         margin-right: 5px;
       }
 
-      .battery-container {
-        top: 0px;
-        right: 0px;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
       .battery {
-        margin: auto;
-        position: relative;
-        left: -25px;
-        top: 40px;
-        width: 80px;
+        margin: 20px 0px 0px -68px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 90px;
       }
 
       .battery-frame {
@@ -414,12 +402,6 @@ export class NissanLeafCard extends LitElement {
 
         // border: 1px;
         // border-style: dotted;
-      }
-
-      .tooltip {
-        position: relative;
-        display: inline-block;
-        // border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
       }
 
       /* Tooltip text */
