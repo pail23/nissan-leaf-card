@@ -282,7 +282,6 @@ export class NissanLeafCard extends LitElement {
 
           <div class="infoitems">${this.renderInfoItemsRight()}</div>
         </div>
-        <img src="${LEAF_IMAGE}" />
         <div class="toolbar">${this.renderToolbarButton('update', mdiReload, 'Update')}</div>
       </ha-card>
     `;
