@@ -226,9 +226,35 @@ export class NissanLeafCard extends LitElement {
       <div class="tooltip">
         <ha-icon-button .path=${icon} .label=${useText} @click=${() => this.callService(service, isRequest)}>
         </ha-icon-button>
-        <span class="tooltiptext">${useText}</span>
       </div>
     `;
+  }
+
+  private renderBattery(): TemplateResult | void {
+    const { charge, chargingStatus } = this.getEntities();
+    if (chargingStatus && chargingStatus.state == 'on') {
+      const batteryLevel = parseFloat(this.getEntityState(charge)) / 100;
+      const startWidth = Math.round(batteryLevel * 190);
+      const speed = Math.round((1 - batteryLevel) * 8);
+      return html`
+        <div class="battery">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.13 142.85">
+            <defs></defs>
+
+            <path
+              class="battery-frame"
+              d="M 257.13,74.107786 A 14.24,11.365588 0 0 1 242.84,85.513282 V 99.768156 A 17.91,14.294781 0 0 1 225,114.01505 H 17.86 A 17.91,14.294781 0 0 1 0,99.768156 V 14.254874 A 17.91,14.294781 0 0 1 17.86,0 H 225 a 17.91,14.294781 0 0 1 17.86,14.254874 v 14.246893 a 14.24,11.365588 0 0 1 14.27,11.405495 z m -14.29,0 V 39.907262 H 228.56 V 14.254874 A 3.53,2.8174527 0 0 0 225,11.405496 H 17.86 a 3.52,2.8094713 0 0 0 -3.57,2.849378 v 85.513282 a 3.52,2.8094713 0 0 0 3.57,2.849374 H 225 a 3.53,2.8174527 0 0 0 3.57,-2.849374 v -25.66037 z"
+            />
+
+            <rect class="battery-level" x="26" y="26" width="190" height="63">
+              <animate attributeName="width" values="${startWidth}; 190" dur="${speed}s" repeatCount="indefinite" />
+            </rect>
+          </svg>
+        </div>
+      `;
+    } else {
+      return html``;
+    }
   }
 
   // https://lit.dev/docs/components/rendering/
@@ -249,6 +275,8 @@ export class NissanLeafCard extends LitElement {
         tabindex="0"
         .label=${`Nissan Leaf: ${this.config.chargeEntity || 'No Entity Defined'}`}
       >
+        <img src="${LEAF_IMAGE}" />
+        ${this.renderBattery()}
         <div class="header">
           <div class="infoitems-left">${this.renderInfoItemsLeft()}</div>
 
@@ -323,6 +351,24 @@ export class NissanLeafCard extends LitElement {
       .toolbar ha-icon-button:last-child {
         margin-right: 5px;
       }
+
+      .battery {
+        margin: 20px 0px 0px -68px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 90px;
+      }
+
+      .battery-frame {
+        fill: #20729b;
+      }
+
+      .battery-level {
+        top: 40;
+        fill: #20729b;
+      }
+
       .header {
         height: 0px;
         display: flex;
@@ -375,12 +421,6 @@ export class NissanLeafCard extends LitElement {
 
         // border: 1px;
         // border-style: dotted;
-      }
-
-      .tooltip {
-        position: relative;
-        display: inline-block;
-        // border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
       }
 
       /* Tooltip text */
