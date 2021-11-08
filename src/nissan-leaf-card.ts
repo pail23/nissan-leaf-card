@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { LitElement, html, TemplateResult, css, PropertyValues, CSSResultGroup } from 'lit';
+import { mdiReload } from '@mdi/js';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { customElement, property, state } from 'lit/decorators';
 import {
@@ -223,9 +224,8 @@ export class NissanLeafCard extends LitElement {
     }
     return html`
       <div class="tooltip">
-        <ha-icon-button .label="${useText}" @click="${() => this.callService(service, isRequest)}">
-          <ha-icon icon="${icon}"></ha-icon
-        ></ha-icon-button>
+        <ha-icon-button .path=${icon} .label=${useText} @click=${() => this.callService(service, isRequest)}>
+        </ha-icon-button>
         <span class="tooltiptext">${useText}</span>
       </div>
     `;
@@ -255,7 +255,7 @@ export class NissanLeafCard extends LitElement {
           <div class="infoitems">${this.renderInfoItemsRight()}</div>
         </div>
         <img src="${LEAF_IMAGE}" />
-        <div class="toolbar">${this.renderToolbarButton('update', 'mdi:reload', 'Update')}</div>
+        <div class="toolbar">${this.renderToolbarButton('update', mdiReload, 'Update')}</div>
       </ha-card>
     `;
   }
