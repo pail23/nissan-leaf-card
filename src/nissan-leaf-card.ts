@@ -196,16 +196,6 @@ export class NissanLeafCard extends LitElement {
 
   // https://lit.dev/docs/components/rendering/
   protected render(): TemplateResult | void {
-    // TODO Check for stateObj or other necessary things and render a warning if missing
-
-    /*
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this.config.hold_action),
-          hasDoubleClick: hasAction(this.config.double_tap_action),
-        })}
-
-*/
     return html`
       <ha-card .header=${this.config.name} tabindex="0" .label=${`Nissan Leaf`}>
         <img src="${LEAF_IMAGE}" />
@@ -218,13 +208,7 @@ export class NissanLeafCard extends LitElement {
       </ha-card>
     `;
   }
-  /*
-  private _handleAction(ev: ActionHandlerEvent): void {
-    if (this.hass && this.config && ev.detail.action) {
-      handleAction(this, this.hass, this.config, ev.detail.action);
-    }
-  }
-*/
+
   private _showWarning(warning: string): TemplateResult {
     return html` <hui-warning>${warning}</hui-warning> `;
   }
