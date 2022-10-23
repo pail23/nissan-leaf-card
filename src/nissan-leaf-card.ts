@@ -6,9 +6,6 @@ import { customElement, property, state } from 'lit/decorators';
 import {
   HomeAssistant,
   hasConfigOrEntityChanged,
-  hasAction,
-  ActionHandlerEvent,
-  handleAction,
   fireEvent,
   LovelaceCardEditor,
   getLovelace,
@@ -17,8 +14,7 @@ import {
 import './editor';
 
 import type { NissanLeafCardConfig } from './types';
-import { actionHandler } from './action-handler-directive';
-import { CARD_VERSION, LEAF_IMAGE, LEAF_SERVICE_DOMAIN, LEAF_ENTITY_BASE, ENTITIES } from './const';
+import { CARD_VERSION, LEAF_IMAGE, ENTITIES } from './const';
 import { localize } from './localize/localize';
 
 /* eslint no-console: 0 */
@@ -69,25 +65,6 @@ export class NissanLeafCard extends LitElement {
     };
   }
 
-  get chargeEntity(): HassEntity | undefined {
-    return this.config.chargeEntity != undefined ? this.hass.states[this.config.chargeEntity] : undefined;
-  }
-
-  get vin(): string {
-    const entity = this.chargeEntity;
-    if (entity != undefined) {
-      return entity?.attributes['vin'];
-    } else {
-      return '';
-    }
-  }
-
-  private get entityBasename(): string {
-    return this.config.chargeEntity === undefined
-      ? ''
-      : this.config.chargeEntity.split('.')[1].replace(LEAF_ENTITY_BASE, '');
-  }
-
   private getEntityState(entity) {
     try {
       return entity.state;
@@ -104,18 +81,8 @@ export class NissanLeafCard extends LitElement {
     }
   }
 
-  private getEntityId(entityBase: string): string | undefined {
+  private getEntity(entityId) {
     try {
-      return entityBase.split('.')[0] + '.' + this.entityBasename + '_' + entityBase.split('.')[1];
-    } catch (err) {
-      return undefined;
-    }
-  }
-
-  private getEntity(entityBase) {
-    try {
-      const entityId = this.getEntityId(entityBase);
-
       return entityId === undefined ? undefined : this.hass.states[entityId];
     } catch (err) {
       return undefined;
@@ -123,15 +90,13 @@ export class NissanLeafCard extends LitElement {
   }
 
   private getEntities() {
-    const charge = this.chargeEntity;
+    const soc = this.getEntity(ENTITIES.soc);
     const range = this.getEntity(ENTITIES.range);
-    const rangeAC = this.getEntity(ENTITIES.rangeAC);
     const chargingStatus = this.getEntity(ENTITIES.chargingStatus);
     const plugStatus = this.getEntity(ENTITIES.plugStatus);
     return {
-      charge,
+      soc,
       range,
-      rangeAC,
       chargingStatus,
       plugStatus,
     };
@@ -144,18 +109,6 @@ export class NissanLeafCard extends LitElement {
     }
 
     return hasConfigOrEntityChanged(this, changedProps, false);
-  }
-
-  private callService(service, isRequest = true, options = {}) {
-    this.hass.callService(LEAF_SERVICE_DOMAIN, service, {
-      vin: this.vin,
-      ...options,
-    });
-
-    if (isRequest) {
-      // this.requestInProgress = true; //TODO: Removed, must be improved to check all sensors
-      this.requestUpdate();
-    }
   }
 
   private handleMore(entity): void {
@@ -186,7 +139,7 @@ export class NissanLeafCard extends LitElement {
 
   private renderInfoItem(entity, tooltip: string, icon: string, round = false): TemplateResult | void {
     return html`
-      <div class="infoitems-item" @click="${() => this.handleMore(entity)}" ?more-info="true">
+      <div class="infoitems-item" @click="${() => this.handleMore(entity)}" more-info="true">
         <div class="tooltip">
           <ha-icon icon="${icon}"></ha-icon>
           ${this.renderInfoItemText(entity, round)}
@@ -197,43 +150,27 @@ export class NissanLeafCard extends LitElement {
   }
 
   private renderInfoItemsLeft(): TemplateResult | void {
-    const { charge, plugStatus } = this.getEntities();
+    const { soc, plugStatus } = this.getEntities();
     const pluggedIn = plugStatus ? plugStatus.state == 'on' : false;
     const plugIcon = pluggedIn ? 'mdi:power-plug' : 'mdi:power-plug-off';
     return html`
-      ${this.renderInfoItem(charge, localize('common.charge'), 'mdi:battery')}
+      ${this.renderInfoItem(soc, localize('common.charge'), 'mdi:battery')}
       ${this.renderInfoItem(undefined, localize('common.charge'), plugIcon)}
     `;
   }
 
   private renderInfoItemsRight(): TemplateResult | void {
-    const { range, rangeAC, chargingStatus } = this.getEntities();
+    const { range, chargingStatus } = this.getEntities();
     return html`
       ${this.renderInfoItem(range, localize('common.range'), 'mdi:map-marker-distance')}
-      ${this.renderInfoItem(rangeAC, localize('common.rangeAC'), 'mdi:map-marker-distance')}
       ${this.renderInfoItem(chargingStatus, localize('common.chargingStatus'), 'mdi:ev-station')}
     `;
   }
 
-  private renderToolbarButton(service, icon, text, isRequest = true): TemplateResult | void {
-    let useText = '';
-    try {
-      useText = localize(text);
-    } catch (e) {
-      useText = text;
-    }
-    return html`
-      <div class="tooltip">
-        <ha-icon-button .path=${icon} .label=${useText} @click=${() => this.callService(service, isRequest)}>
-        </ha-icon-button>
-      </div>
-    `;
-  }
-
   private renderBattery(): TemplateResult | void {
-    const { charge, chargingStatus } = this.getEntities();
+    const { soc, chargingStatus } = this.getEntities();
     if (chargingStatus && chargingStatus.state == 'on') {
-      const batteryLevel = parseFloat(this.getEntityState(charge)) / 100;
+      const batteryLevel = parseFloat(this.getEntityState(soc)) / 100;
       const startWidth = Math.round(batteryLevel * 190);
       const speed = Math.round((1 - batteryLevel) * 8);
       return html`
@@ -270,11 +207,7 @@ export class NissanLeafCard extends LitElement {
 
 */
     return html`
-      <ha-card
-        .header=${this.config.name}
-        tabindex="0"
-        .label=${`Nissan Leaf: ${this.config.chargeEntity || 'No Entity Defined'}`}
-      >
+      <ha-card .header=${this.config.name} tabindex="0" .label=${`Nissan Leaf`}>
         <img src="${LEAF_IMAGE}" />
         ${this.renderBattery()}
         <div class="header">
@@ -282,7 +215,6 @@ export class NissanLeafCard extends LitElement {
 
           <div class="infoitems">${this.renderInfoItemsRight()}</div>
         </div>
-        <div class="toolbar">${this.renderToolbarButton('update', mdiReload, 'Update')}</div>
       </ha-card>
     `;
   }
